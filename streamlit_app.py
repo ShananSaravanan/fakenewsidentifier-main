@@ -2,7 +2,7 @@ import streamlit as st
 import joblib
 import requests
 from newspaper import Article  # You can install the 'newspaper3k' package for this
-#i commenr
+
 # Load the trained model
 pipe = joblib.load('model_v1.pkl')
 
