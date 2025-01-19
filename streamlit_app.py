@@ -7,6 +7,18 @@ import mlflow
 import mlflow.sklearn
 import pandas as pd
 
+
+import threading
+from data_drift import check_data_drift
+
+def run_async_drift_check(train_data_path, new_data_path):
+    def drift_task():
+        drift_result = check_data_drift(train_data_path, new_data_path)
+        log.info(f"Drift result: {drift_result}")
+    # Run drift check in a separate thread
+    threading.Thread(target=drift_task).start()
+
+
 # Initialize MLflow
 mlflow.set_tracking_uri("http://127.0.0.1:5000")  # Replace with your MLflow server URI if applicable
 mlflow.set_experiment("Fake News Detection - Runtime Monitoring")
@@ -41,7 +53,7 @@ if input_text:
     # Make prediction using the model
     prediction = pipe.predict([text])
 
-
+    label = prediction[0]
 
     # Log prediction and input length to MLflow in real-time
     with mlflow.start_run(nested=True):
@@ -52,26 +64,20 @@ if input_text:
     
 
     # checking data drift
-    from data_drift import check_data_drift
-
-    # Path to training data
-    train_data_path = "train_data.xlsx"
 
     #load data into a DataFrame object:
     df = pd.DataFrame({
         "processed_text": [text],
-        "label": [prediction]
+        "label": [label]
     })
 
     output = df.to_excel("output.xlsx", index=False)
 
-    new_data = "output.xlsx"
-
     # Call the drift detection function
-    drift_result = check_data_drift(train_data_path, new_data)
+    drift_result = run_async_drift_check("train_data.xlsx", "output.xlsx")
 
     # Display the result
-    st.write(drift_result)
+    #st.write(drift_result)
 
 
 
