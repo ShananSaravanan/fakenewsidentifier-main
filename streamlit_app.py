@@ -1,6 +1,7 @@
 import streamlit as st
 import joblib
 import requests
+import logging as log
 from newspaper import Article  # You can install the 'newspaper3k' package for this
 
 # Load the trained model
@@ -38,3 +39,10 @@ if input_text:
         st.write("The news is **Not Fake**.")
     else:
         st.write("The news is **Fake**.")
+
+# Logs and tracks user interaction
+log.basicConfig(level=log.INFO, filename='app.log', filemode='a',
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Log an example message
+log.info("Streamlit app started")
