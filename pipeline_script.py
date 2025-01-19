@@ -4,6 +4,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
+import mlflow
+from sklearn.metrics import accuracy_score
 import joblib
 
 # Load training dataset
@@ -34,6 +36,15 @@ pipeline.fit(X_train, y_train)
 # Test the model
 predictions = pipeline.predict(X_test)
 print(classification_report(y_test, predictions))
+
+# mlflow logging during model training & evaluation
+mlflow.set_experiment("Fake News Detection")
+
+with mlflow.start_run():
+    # Log parameters, metrics, and artifacts
+    mlflow.log_param("classifier", "MultinomialNB")
+    mlflow.log_metric("accuracy", accuracy_score(y_test, predictions))
+    mlflow.sklearn.log_model(pipeline, "model")
 
 # Save the trained model to a .pkl file
 joblib.dump(pipeline, 'model_v1.pkl')
