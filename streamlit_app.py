@@ -3,6 +3,12 @@ import joblib
 import requests
 import logging as log
 from newspaper import Article  # You can install the 'newspaper3k' package for this
+import mlflow
+import mlflow.sklearn
+
+# Initialize MLflow
+mlflow.set_tracking_uri("http://127.0.0.1:5000")  # Replace with your MLflow server URI if applicable
+mlflow.set_experiment("Fake News Detection - Runtime Monitoring")
 
 # Load the trained model
 pipe = joblib.load('model_v1.pkl')
@@ -33,6 +39,12 @@ if input_text:
 
     # Make prediction using the model
     prediction = pipe.predict([text])
+
+    # Log prediction and input length to MLflow
+    with mlflow.start_run(nested=True):
+        mlflow.log_param("input_type", "URL" if input_text.startswith('http') else "Text")
+        mlflow.log_metric("input_length", len(text))
+        mlflow.log_metric("prediction", prediction)  # Log prediction as a metric (0 or 1)
 
     # Output prediction: 0 -> Not Fake, 1 -> Fake
     if prediction[0] == 0:
