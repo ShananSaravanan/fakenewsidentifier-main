@@ -5,6 +5,7 @@ import logging as log
 from newspaper import Article  # You can install the 'newspaper3k' package for this
 import mlflow
 import mlflow.sklearn
+import pandas as pd
 
 # Initialize MLflow
 mlflow.set_tracking_uri("http://127.0.0.1:5000")  # Replace with your MLflow server URI if applicable
@@ -40,11 +41,39 @@ if input_text:
     # Make prediction using the model
     prediction = pipe.predict([text])
 
-    # Log prediction and input length to MLflow
+
+
+    # Log prediction and input length to MLflow in real-time
     with mlflow.start_run(nested=True):
         mlflow.log_param("input_type", "URL" if input_text.startswith('http') else "Text")
         mlflow.log_metric("input_length", len(text))
         mlflow.log_metric("prediction", prediction)  # Log prediction as a metric (0 or 1)
+
+    
+
+    # checking data drift
+    from data_drift import check_data_drift
+
+    # Path to training data
+    train_data_path = "train_data.xlsx"
+
+    #load data into a DataFrame object:
+    df = pd.DataFrame({
+        "processed_text": [text],
+        "label": [prediction]
+    })
+
+    output = df.to_excel("output.xlsx", index=False)
+
+    new_data = "output.xlsx"
+
+    # Call the drift detection function
+    drift_result = check_data_drift(train_data_path, new_data)
+
+    # Display the result
+    st.write(drift_result)
+
+
 
     # Output prediction: 0 -> Not Fake, 1 -> Fake
     if prediction[0] == 0:
@@ -52,9 +81,15 @@ if input_text:
     else:
         st.write("The news is **Fake**.")
 
+
+
 # Logs and tracks user interaction
 log.basicConfig(level=log.INFO, filename='app.log', filemode='a',
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Log an example message
 log.info("Streamlit app started")
+
+
+
+
