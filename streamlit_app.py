@@ -6,8 +6,9 @@ from newspaper import Article  # You can install the 'newspaper3k' package for t
 import mlflow
 import mlflow.sklearn
 import pandas as pd
+import os
 
-
+# running asycnhronous checks
 import threading
 from data_drift import check_data_drift
 
@@ -64,14 +65,31 @@ if input_text:
     
 
     # checking data drift
-
-    #load data into a DataFrame object:
     df = pd.DataFrame({
         "processed_text": [text],
         "label": [label]
     })
 
     output = df.to_excel("output.xlsx", index=False)
+
+    # File to store cumulative data
+    cumulative_data_path = "cumulative_data.xlsx"
+
+    def update_cumulative_data(new_data):
+        if os.path.exists(cumulative_data_path):
+            cumulative_data = pd.read_excel(cumulative_data_path)
+            cumulative_data = pd.concat([cumulative_data, new_data], ignore_index=True)
+        else:
+            cumulative_data = new_data
+
+        cumulative_data.to_excel(cumulative_data_path, index=False)
+
+    # Update cumulative data after every input
+    new_entry = pd.DataFrame({"processed_text": [text], "label": [label]})
+    update_cumulative_data(new_entry)
+
+
+    
 
     # Call the drift detection function
     drift_result = run_async_drift_check("train_data.xlsx", "output.xlsx")
