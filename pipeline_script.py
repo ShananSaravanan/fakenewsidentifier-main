@@ -38,7 +38,7 @@ predictions = pipeline.predict(X_test)
 print(classification_report(y_test, predictions))
 
 # mlflow logging during model training & evaluation
-mlflow.set_experiment("Fake News Detection")
+mlflow.set_experiment("Fake News Detection - Training")
 
 with mlflow.start_run():
     # Log parameters, metrics, and artifacts
