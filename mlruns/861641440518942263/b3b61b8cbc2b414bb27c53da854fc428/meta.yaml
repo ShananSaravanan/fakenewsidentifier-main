@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/861641440518942263/b3b61b8cbc2b414bb27c53da854fc428/artifacts
+end_time: 1737889731819
+entry_point_name: ''
+experiment_id: '861641440518942263'
+lifecycle_stage: active
+run_id: b3b61b8cbc2b414bb27c53da854fc428
+run_name: beautiful-crab-309
+run_uuid: b3b61b8cbc2b414bb27c53da854fc428
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1737889731693
+status: 3
+tags: []
+user_id: USER

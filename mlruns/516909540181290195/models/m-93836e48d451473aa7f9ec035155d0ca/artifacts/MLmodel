@@ -1,0 +1,22 @@
+artifact_path: file:///C:/Users/USER/Downloads/Telegram%20Desktop/fakenewsidentifier-main/mlruns/516909540181290195/models/m-93836e48d451473aa7f9ec035155d0ca/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+mlflow_version: 3.8.1
+model_id: m-93836e48d451473aa7f9ec035155d0ca
+model_size_bytes: 12169968
+model_uuid: m-93836e48d451473aa7f9ec035155d0ca
+prompts: null
+run_id: e9681af500654d75bc76b50335ea8048
+utc_time_created: '2026-01-21 07:38:51.713805'

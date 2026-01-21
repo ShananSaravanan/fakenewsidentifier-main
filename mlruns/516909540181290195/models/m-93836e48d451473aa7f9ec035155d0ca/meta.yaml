@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/USER/Downloads/Telegram%20Desktop/fakenewsidentifier-main/mlruns/516909540181290195/models/m-93836e48d451473aa7f9ec035155d0ca/artifacts
+creation_timestamp: 1768981131338
+experiment_id: '516909540181290195'
+last_updated_timestamp: 1768981149659
+model_id: m-93836e48d451473aa7f9ec035155d0ca
+model_type: null
+name: model
+source_run_id: e9681af500654d75bc76b50335ea8048
+status: 2
+status_message: null

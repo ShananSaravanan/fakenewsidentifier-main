@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/861641440518942263/15bb519138d741228212fbdb35a1eb0f/artifacts
+end_time: 1737888819825
+entry_point_name: ''
+experiment_id: '861641440518942263'
+lifecycle_stage: active
+run_id: 15bb519138d741228212fbdb35a1eb0f
+run_name: fearless-donkey-195
+run_uuid: 15bb519138d741228212fbdb35a1eb0f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1737888819687
+status: 3
+tags: []
+user_id: USER
