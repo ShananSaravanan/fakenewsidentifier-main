@@ -7,10 +7,12 @@ import mlflow
 import mlflow.sklearn
 import pandas as pd
 import os
+from scripts.retraining_model import retrain_model
+import glob
 
 # running asycnhronous checks
 import threading
-from data_drift import check_data_drift
+from scripts.data_drift import check_data_drift
 
 def run_async_drift_check(train_data_path, new_data_path):
     def drift_task():
@@ -25,7 +27,15 @@ mlflow.set_tracking_uri("http://127.0.0.1:5000")  # Replace with your MLflow ser
 mlflow.set_experiment("Fake News Detection - Runtime Monitoring")
 
 # Load the trained model
-pipe = joblib.load('model_v1.pkl')
+#pipe = joblib.load('model_v1.pkl')
+# Function to load the latest model
+def load_latest_model(models_dir="models"):
+    model_files = glob.glob(f"{models_dir}/model_v*.pkl")
+    latest_model = max(model_files, key=os.path.getctime)
+    return joblib.load(latest_model)
+
+# Load the most recent model
+pipe = load_latest_model()
 
 # Function to extract text from URL
 def extract_text_from_url(url):
@@ -51,16 +61,24 @@ if input_text:
     else:
         text = input_text
 
+    import time
+    start_time = time.time()
     # Make prediction using the model
     prediction = pipe.predict([text])
+    end_time = time.time()
 
     label = prediction[0]
 
+
+    
     # Log prediction and input length to MLflow in real-time
     with mlflow.start_run(nested=True):
         mlflow.log_param("input_type", "URL" if input_text.startswith('http') else "Text")
         mlflow.log_metric("input_length", len(text))
         mlflow.log_metric("prediction", prediction)  # Log prediction as a metric (0 or 1)
+        mlflow.log_metric("execution_time", end_time - start_time)
+
+
 
     
 
@@ -70,10 +88,10 @@ if input_text:
         "label": [label]
     })
 
-    output = df.to_excel("output.xlsx", index=False)
+    output = df.to_excel("data/output.xlsx", index=False)
 
     # File to store cumulative data
-    cumulative_data_path = "cumulative_data.xlsx"
+    cumulative_data_path = "data/cumulative_data.xlsx"
 
     def update_cumulative_data(new_data):
         if os.path.exists(cumulative_data_path):
@@ -89,21 +107,31 @@ if input_text:
     update_cumulative_data(new_entry)
 
 
-    
-
-    # Call the drift detection function
-    drift_result = run_async_drift_check("train_data.xlsx", "output.xlsx")
-
-    # Display the result
-    #st.write(drift_result)
-
-
 
     # Output prediction: 0 -> Not Fake, 1 -> Fake
     if prediction[0] == 0:
         st.write("The news is **Not Fake**.")
     else:
         st.write("The news is **Fake**.")
+
+
+if st.button("Check data drift"):
+
+    # Call the drift detection function
+    drift_result = check_data_drift("data/train_data.xlsx", "data/cumulative_data.xlsx")
+    st.write(drift_result)
+
+    if "Data drift detected" in drift_result:
+        st.write("Retraining model due to detected data drift...")
+        # Trigger retraining
+        new_model_path = retrain_model("data/train_data.xlsx", "data/cumulative_data.xlsx")
+        st.write("Model retraining complete.")
+    
+    
+
+    
+
+
 
 
 

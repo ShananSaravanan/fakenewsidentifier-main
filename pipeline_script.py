@@ -5,11 +5,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
 import mlflow
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, f1_score, recall_score
 import joblib
 
 # Load training dataset
-train_data = pd.read_excel('train_data.xlsx')  # Replace with your training file path
+train_data = pd.read_excel('data/train_data.xlsx')  # Replace with your training file path
 
 # Handle missing values in processed_text
 train_data['processed_text'] = train_data['processed_text'].fillna("")  # Replace NaN with an empty string
@@ -17,7 +17,7 @@ X_train = train_data['processed_text']  # Features
 y_train = train_data['label']           # Labels
 
 # Load testing dataset
-test_data = pd.read_excel('test_data.xlsx')  # Replace with your testing file path
+test_data = pd.read_excel('data/test_data.xlsx')  # Replace with your testing file path
 
 # Handle missing values in processed_text
 test_data['processed_text'] = test_data['processed_text'].fillna("")  # Replace NaN with an empty string
@@ -44,8 +44,11 @@ with mlflow.start_run():
     # Log parameters, metrics, and artifacts
     mlflow.log_param("classifier", "MultinomialNB")
     mlflow.log_metric("accuracy", accuracy_score(y_test, predictions))
+    mlflow.log_metric("precision", precision_score(y_test, predictions))
+    mlflow.log_metric("recall", recall_score(y_test, predictions))
+    mlflow.log_metric("f1_score", f1_score(y_test, predictions))
     mlflow.sklearn.log_model(pipeline, "model")
 
 # Save the trained model to a .pkl file
-joblib.dump(pipeline, 'model_v1.pkl')
+joblib.dump(pipeline, 'models/model_v1.pkl')
 print("Model saved as model_v1.pkl")
